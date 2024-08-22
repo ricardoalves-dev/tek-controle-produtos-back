@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -16,4 +17,15 @@ datasource db {
 model Categoria {
   id Int @id @default(autoincrement())
   descricao String @db.VarChar(30) @unique
+  produtos Produto[]
+}
+
+model Produto {
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(30) @unique
+  descricao String? @db.VarChar(100)
+  preco Decimal @db.Money
+  imagem String? @db.VarChar(100)
+  categoria Categoria @relation(fields: [categoriaProduto], references: [id])
+  categoriaProduto Int
 }

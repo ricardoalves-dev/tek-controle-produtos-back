@@ -5,7 +5,7 @@ import ExceptionHandler from '../public/middlewares/ExceptionHandler';
 export default class Server {
     private server: express.Application;
     
-    constructor(exceptionHandler: ExceptionHandler, ...routes: [IRoutes]){
+    constructor(exceptionHandler: ExceptionHandler, ...routes: IRoutes[]){
         const cors = require('cors');
         this.server = express();
         this.server.use(express.json());    

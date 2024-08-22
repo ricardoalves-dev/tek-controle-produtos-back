@@ -3,7 +3,7 @@ export default class PrismaErrors {
     public static getPrismaClientKnownRequestErrorMessage(erro: Prisma.PrismaClientKnownRequestError): string {                
         switch (erro.code) {            
             case 'P2025':
-                return 'Registro não encontrado';  
+                return `Registro não encontrado: ${erro.message}`;  
                 
             case 'P2002':
                 return `Violação de chave única da tabela ${erro.meta!.modelName}. Campos problemáticos: ${Array(erro.meta!.target).join(', ')}`;
