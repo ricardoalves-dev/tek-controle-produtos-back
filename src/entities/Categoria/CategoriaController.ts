@@ -13,14 +13,12 @@ export default class CategoriaController {
         }        
     }
 
-    public async create(req: Request, res: Response<ApiResponse<Categoria>>, next: NextFunction): Promise<void> {           
+    public async create(req: Request<any, any, Categoria>, res: Response<ApiResponse<Categoria>>, next: NextFunction): Promise<void> {           
         try {            
-            await CategoriaController.validateDescricao(req.body.descricao);  
-            const categoria: Omit<Categoria, 'id'> = {descricao: ''};            
-            categoria.descricao = req.body.descricao;                
+            await CategoriaController.validateDescricao(req.body.descricao);                  
             
             const apiResponse: ApiResponse<Categoria> = new ApiResponse<Categoria>();                         
-            apiResponse.setData(await prisma.categoria.create({data: categoria}));
+            apiResponse.setData(await prisma.categoria.create({data: req.body}));
             res.status(201).send(apiResponse);
         } catch (error) {
             next(error);
@@ -61,8 +59,8 @@ export default class CategoriaController {
     public async update(req: Request, res: Response<ApiResponse<Categoria>>, next: NextFunction): Promise<void> {                   
         try {                       
             let categoria: Categoria = await prisma.categoria.findUniqueOrThrow({where: {id: parseInt(req.params.id)}});
-            await CategoriaController.validateDescricao(req.body.descricao);
-            categoria.descricao = req.body.descricao;
+            await CategoriaController.validateDescricao(req.body.descricao);            
+            Object.assign(categoria, req.body);                      
                         
             const apiResponse: ApiResponse<Categoria> = new ApiResponse<Categoria>();         
             apiResponse.setData(await prisma.categoria.update({data: categoria, where:{id: categoria.id}}));

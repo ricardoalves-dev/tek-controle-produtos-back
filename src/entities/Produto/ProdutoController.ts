@@ -5,7 +5,7 @@ import '../../../prisma/PrismaSingleton';
 import InvalidArgumentException from "../../public/exceptions/InvalidArgumentException";
 import { prisma } from "../../../prisma/PrismaSingleton";
 
-type ProdutoDto = Omit<Produto, 'categoriaProduto'> & {categoria: Omit<Categoria, 'descricao'> & Partial<Pick<Categoria, 'descricao'>>};
+export type ProdutoDto = Omit<Produto, 'categoriaProduto'> & {categoria: Omit<Categoria, 'descricao'> & Partial<Pick<Categoria, 'descricao'>>};
 
 export default class ProdutoController {
     constructor() {}
@@ -33,25 +33,12 @@ export default class ProdutoController {
         await ProdutoController.validateCategoria(produto.categoriaProduto);        
     }
 
-    async create(req: Request, res: Response<ApiResponse<ProdutoDto>>, next: NextFunction): Promise<void> {
-        const produto: Omit<Produto, 'id'> = {
-            nome: '',
-            descricao: '',
-            preco: new Prisma.Decimal(0),
-            imagem: '',
-            categoriaProduto: 0
-        };
-        try {                             
-            produto.nome = req.body.nome;
-            produto.descricao = req.body.descricao;          
-            produto.preco = new Prisma.Decimal(req.body.preco ? req.body.preco : 0);            
-            produto.imagem = req.body.imagem;
-            produto.categoriaProduto = req.body.categoria?.id | 0;            
-
-            await ProdutoController.validate(produto);
+    async create(req: Request, res: Response<ApiResponse<ProdutoDto>>, next: NextFunction): Promise<void> {        
+        try {                                          
+            await ProdutoController.validate(req.body);
             const apiResponse: ApiResponse<ProdutoDto> = new ApiResponse<ProdutoDto>();
             apiResponse.setData(await prisma.produto.create({
-                data: produto, 
+                data: req.body, 
                 omit: {categoriaProduto: true}, 
                 include: {categoria: true}}));
             res.status(201).send(apiResponse);
@@ -94,12 +81,8 @@ export default class ProdutoController {
         try {
             const produto: Produto = await prisma.produto.findUniqueOrThrow({where: {id: parseInt(req.params.id)}});
             
-            produto.nome = req.body.nome;
-            produto.descricao = req.body.descricao;
-            produto.preco = new Prisma.Decimal(req.body.preco || 0);
-            produto.imagem = req.body.imagem;
-            produto.categoriaProduto = req.body.categoria?.id || 0;
-
+            Object.assign(produto, req.body);
+            console.log(produto);
             await ProdutoController.validate(produto);
 
             const apiResponse: ApiResponse<ProdutoDto> = new ApiResponse<ProdutoDto>;
