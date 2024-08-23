@@ -81,8 +81,7 @@ export default class ProdutoController {
         try {
             const produto: Produto = await prisma.produto.findUniqueOrThrow({where: {id: parseInt(req.params.id)}});
             
-            Object.assign(produto, req.body);
-            console.log(produto);
+            Object.assign(produto, req.body);            
             await ProdutoController.validate(produto);
 
             const apiResponse: ApiResponse<ProdutoDto> = new ApiResponse<ProdutoDto>;

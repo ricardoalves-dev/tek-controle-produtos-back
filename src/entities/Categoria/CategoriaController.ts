@@ -13,7 +13,7 @@ export default class CategoriaController {
         }        
     }
 
-    public async create(req: Request<any, any, Categoria>, res: Response<ApiResponse<Categoria>>, next: NextFunction): Promise<void> {           
+    public async create(req: Request, res: Response<ApiResponse<Categoria>>, next: NextFunction): Promise<void> {           
         try {            
             await CategoriaController.validateDescricao(req.body.descricao);                  
             
