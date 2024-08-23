@@ -1,6 +1,7 @@
-import express from 'express';
 import CategoriaController from './CategoriaController';
 import IRoutes from '../../infra/interfaces/IRoutes';
+import express, { Request, Response, NextFunction } from 'express';
+import { Categoria } from '@prisma/client';
 
 export default class CategoriaRoutes implements IRoutes{
     private _router: express.Router;    
@@ -10,15 +11,24 @@ export default class CategoriaRoutes implements IRoutes{
     constructor(controller: CategoriaController){
         this._router = express.Router();
         this.controller = controller;
-        this._url = '/categoria';        
+        this._url = '/categoria';             
     }
 
     register(): void {
-        this._router.post('/', this.controller.create);       
+        this._router.post('/', this.bodyParaEntidade,  this.controller.create);       
         this._router.get('/', this.controller.find);
         this._router.get('/:id', this.controller.findById);
         this._router.delete('/:id', this.controller.delete);
-        this._router.put('/:id', this.controller.update);
+        this._router.put('/:id', this.bodyParaEntidade, this.controller.update);
+    }
+
+    bodyParaEntidade(req: Request, res: Response, next: NextFunction) {
+        const categoria: Partial<Categoria> = {};
+        
+        categoria.descricao = req.body.descricao || '';
+        req.body = categoria;
+        
+        next();
     }
 
     get router() {
